@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Owed Post-Session Survey</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232747A6'/%3E%3Cpath d='M10 9h12M10 16h12M10 23h7' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one paper-questionnaire column; numbered questions on hairlines, one part per screen so later parts can't cue earlier answers */
+:root {
+  --bg: #EDF0F3;
+  --sheet: #FFFFFF;
+  --ink: #16202A;
+  --muted: #5A6672;
+  --line: #D5DBE2;
+  --accent: #2747A6;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E4E9F7;
+  --ok: #1D7A4E;
+  --warn-soft: #FBF1DE;
+  --warn-line: #E7C98F;
+  --danger: #B42318;
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "Public Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F1419; --sheet: #171E26; --ink: #E5EAF0; --muted: #9AA6B3; --line: #2C3742;
+    --accent: #93AAFF; --accent-ink: #0F1419; --accent-soft: #1E2944; --ok: #63D29C;
+    --warn-soft: #2D2413; --warn-line: #6B5426; --danger: #FF8B80;
+    color-scheme: dark;
+  }
+}
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-block: max(28px, env(safe-area-inset-top, 0px)) max(56px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 20px;
+}
+header { display: grid; gap: 6px; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-wrap: balance;
+  margin: 0;
+  line-height: 1.15;
+}
+h1 { font-size: 34px; }
+h2 { font-size: 26px; }
+.lead { margin: 0; color: var(--muted); max-width: 60ch; }
+
+.sheet {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding-block: 4px;
+  padding-inline: 20px;
+}
+
+/* progress */
+.progress {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.progress li { display: grid; gap: 6px; min-width: 0; }
+.progress .bar { height: 4px; border-radius: 2px; background: var(--line); }
+.progress .done .bar, .progress .current .bar { background: var(--accent); }
+.progress .plabel {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.progress .current .plabel { color: var(--ink); font-weight: 500; }
+
+/* questions */
+.q {
+  display: grid;
+  gap: 10px;
+  padding-block: 22px;
+  border-top: 1px solid var(--line);
+  min-width: 0;
+}
+.q:first-child { border-top: 0; }
+.qnum {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+.qtext { font-size: 17px; font-weight: 600; line-height: 1.4; }
+.hint { margin: -4px 0 0; font-size: 14px; color: var(--muted); }
+textarea, input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  font: 400 16px/1.5 var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+textarea { min-height: 92px; resize: vertical; }
+textarea:focus, input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice { position: relative; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  background: var(--sheet);
+}
+.choice input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.scale .choice span {
+  justify-content: center;
+  width: 100%;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.scale-ends { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); }
+
+.follow { display: grid; gap: 8px; padding-left: 14px; border-left: 2px solid var(--accent-soft); }
+.follow label { font-size: 15px; font-weight: 600; }
+
+.check { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
+
+.reveal {
+  margin-top: 18px;
+  background: var(--accent-soft);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: grid;
+  gap: 6px;
+}
+.reveal p { margin: 0; }
+.reveal .kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); }
+.reveal .say { font-family: var(--font-display); font-size: 19px; line-height: 1.45; }
+
+.notice {
+  margin: 0;
+  background: var(--warn-soft);
+  border: 1px solid var(--warn-line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 15px;
+}
+.field { display: grid; gap: 8px; padding-block: 22px; }
+.field label { font-weight: 600; }
+.error { color: var(--danger); font-size: 14px; margin: 0; }
+
+/* buttons + nav */
+.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.btn {
+  font: 600 16px/1 var(--font-body);
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+.btn-small { min-height: 38px; padding: 0 14px; font-size: 14px; justify-self: start; }
+.status { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.status.ok { color: var(--ok); }
+.status.bad { color: var(--danger); }
+
+.done { display: grid; gap: 14px; padding-block: 22px; }
+.done p { margin: 0; }
+.copybox { display: grid; gap: 10px; }
+.copybox textarea { min-height: 220px; font-family: var(--font-mono); font-size: 13px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 29px; }
+  .sheet { padding-inline: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .choice span, .btn { transition: background-color 120ms ease, border-color 120ms ease; }
+}
+</style>
+</head>
+<body>
+<main class="wrap" id="app" aria-live="polite"></main>
+
+<script>
+(function () {
+  'use strict';
+
+  // Google Apps Script web app URL (ends in /exec). See README.md. Empty = answers can only be copied out.
+  var ENDPOINT = '';
+
+  var DRAFT_KEY = 'owed-post-survey-draft-v1';
+  var REAL = ['Real', 'Made-up', 'A mix', 'Skipped it'];
+  function realFollow(v) {
+    if (v === 'Skipped it') return 'Why did you skip it?';
+    if (v === 'Made-up' || v === 'A mix') return 'Which information was made-up? Why?';
+    return null;
+  }
+  function alwaysWhy() { return 'Why?'; }
+
+  var SECTIONS = [
+    {
+      title: 'Your experience',
+      intro: 'Answer from memory. Please don’t go back into the app.',
+      items: [
+        { id: 'q1', short: 'What Owed is for', type: 'text', label: 'After using the app, what do you think Owed is for?' },
+        { id: 'q2', short: 'Information they remember giving', type: 'text', label: 'What information do you remember giving the app?', hint: 'List everything you can think of. Rough is fine.' },
+        { id: 'q3', short: 'Felt pushed, rushed, unsure or uncomfortable', type: 'text', label: 'Were there any moments you felt pushed, rushed, unsure, or uncomfortable? When?' },
+        { id: 'q4', short: 'Trust (1-5)', type: 'scale', label: 'On a scale of 1 to 5, how much do you trust this app?', low: '1 · Not at all', high: '5 · Completely' }
+      ]
+    },
+    {
+      title: 'What you entered',
+      intro: 'Think back to each screen where you filled something in. Real, made-up and skipped are all fine answers.',
+      items: [
+        { id: 'q5', short: 'Shopping habits: answered based on', type: 'choice', label: 'Shopping habits: for the yes/no questions, did you answer based on what was true or what might earn you money?', options: ['What was true', 'What might earn money', 'A mix'], follow: { id: 'q5_why', short: 'Shopping habits: why', label: alwaysWhy } },
+        { id: 'q6', short: 'Create account: real or made-up', type: 'choice', label: 'Create account: was what you entered real, made-up, or a mix?', options: REAL, follow: { id: 'q6_why', short: 'Create account: what was made-up and why', label: realFollow } },
+        { id: 'q7', short: 'Bank details: real or made-up', type: 'choice', label: 'Bank details: was what you entered real, made-up, or a mix?', options: REAL, follow: { id: 'q7_why', short: 'Bank details: what was made-up and why', label: realFollow } },
+        { id: 'q8', short: 'Profile questions: real or made-up', type: 'choice', label: 'Profile questions: was what you entered real, made-up, or a mix?', options: REAL, follow: { id: 'q8_why', short: 'Profile questions: what was made-up and why', label: realFollow } },
+        { id: 'q9', short: 'SSN: real or made-up', type: 'choice', label: 'SSN on the CVS claim: was what you entered real, made-up, or a mix?', options: REAL, follow: { id: 'q9_why', short: 'SSN: what was made-up and why', label: realFollow } },
+        { id: 'q10', short: 'Would fill out the same way for real', type: 'choice', label: 'Would you fill out your information the same way if this was a real app?', options: ['Yes', 'No', 'Not sure'], follow: { id: 'q10_why', short: 'Same way for real: why', label: alwaysWhy } },
+        { id: 'q11', short: 'How they decided to answer truthfully', type: 'text', label: 'How did you decide whether to answer truthfully or not? Did anything on the screens affect your decision?' }
+      ]
+    },
+    {
+      title: 'Wrap-up',
+      reveal: true,
+      items: [
+        { id: 'q12', short: 'Thoughts after the reveal', type: 'text', label: 'Do you have any thoughts after hearing that?' },
+        { id: 'q13', short: 'What they would change', type: 'text', label: 'If you could change anything about the app, what would it be?' },
+        { id: 'q14', short: 'Anything else', type: 'text', label: 'Was there anything you wanted to add that was not covered?' },
+        { id: 'q15', short: 'Quotes and clips in presentation', type: 'choice', label: 'Can we use anonymous quotes and screen clips from your session in our class presentation?', options: ['Yes, quotes and clips', 'Quotes only', 'No'] },
+        { id: 'q16', short: 'Delete recording now', type: 'check', label: 'Please delete my screen recording now instead of at the end of the project.' }
+      ]
+    }
+  ];
+
+  // Flat field list: one spreadsheet column per field, in this order.
+  var FIELDS = [];
+  var n = 0;
+  SECTIONS.forEach(function (s) {
+    s.items.forEach(function (q) {
+      q.num = ++n;
+      FIELDS.push({ id: q.id, tag: 'Q' + q.num, short: q.short });
+      if (q.follow) FIELDS.push({ id: q.follow.id, tag: 'Q' + q.num + ' follow-up', short: q.follow.short });
+    });
+  });
+  var ITEMS = {};
+  SECTIONS.forEach(function (s) { s.items.forEach(function (q) { ITEMS[q.id] = q; }); });
+
+  // ---------- state ----------
+  function fresh() {
+    return { step: 0, rid: null, participant: '', startedAt: null, completed: false, answers: {} };
+  }
+  var state = fresh();
+  var saveStatus = 'idle';
+  var saveChain = Promise.resolve(true);
+  var finalSaved = null;
+  var startError = '';
+  var confirmRestart = false;
+  var flash = '';
+
+  function loadDraft() {
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      if (d && typeof d === 'object' && d.rid) state = Object.assign(fresh(), d);
+    } catch (e) { /* storage unavailable */ }
+  }
+  function saveDraft() {
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+  }
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* storage unavailable */ }
+  }
+
+  // ---------- saving ----------
+  function payload() {
+    var row = {
+      'Response ID': state.rid,
+      'Participant': state.participant,
+      'Started': state.startedAt,
+      'Last updated': new Date().toISOString(),
+      'Complete': state.completed ? 'yes' : 'no',
+      'Part reached': Math.min(state.step, SECTIONS.length)
+    };
+    FIELDS.forEach(function (f) { row[f.tag + ' ' + f.short] = answerOf(state.answers, f.id); });
+    return row;
+  }
+  function setSaveStatus(s) {
+    saveStatus = s;
+    var el = document.getElementById('save-status');
+    if (!el) return;
+    el.className = 'status' + (s === 'saved' ? ' ok' : s === 'error' ? ' bad' : '');
+    el.textContent = statusText();
+  }
+  function statusText() {
+    if (!ENDPOINT) return '';
+    if (saveStatus === 'saving') return 'Saving…';
+    if (saveStatus === 'saved') return 'Saved';
+    if (saveStatus === 'error') return 'Not saved yet. Answers are kept on this device.';
+    return '';
+  }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function post(data) {
+    // A plain-text body keeps this a simple request, so Apps Script needs no CORS preflight.
+    return fetch(ENDPOINT, { method: 'POST', body: data, redirect: 'follow' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      if (!j || !j.ok) throw new Error((j && j.error) || 'Not saved');
+    });
+  }
+  function persist() {
+    saveDraft();
+    if (!ENDPOINT || !state.rid) return Promise.resolve(false);
+    var data = JSON.stringify(payload());
+    setSaveStatus('saving');
+    saveChain = saveChain
+      .then(function () { return post(data).catch(function () { return wait(800 + Math.random() * 1200).then(function () { return post(data); }); }); })
+      .then(function () { setSaveStatus('saved'); return true; },
+            function () { setSaveStatus('error'); return false; });
+    return saveChain;
+  }
+
+  // ---------- helpers ----------
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function answerOf(answers, id) {
+    var v = answers ? answers[id] : undefined;
+    if (v === true) return 'Yes';
+    if (v === false || v == null) return '';
+    return String(v).trim();
+  }
+  function newId() {
+    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+  function eyebrow() {
+    return '<p class="eyebrow">Owed study' + (state.participant ? ' · ' + esc(state.participant) : '') + '</p>';
+  }
+
+  // ---------- rendering ----------
+  function renderStart() {
+    var notice = ENDPOINT ? '' :
+      '<p class="notice">Saving isn’t connected yet, so answers won’t reach the research team automatically. At the end you’ll copy them and send them to your moderator.</p>';
+    return '<header>' + eyebrow() +
+      '<h1>After your session</h1>' +
+      '<p class="lead">A few questions about the app you just tried. There are no right or wrong answers, and you can skip anything. It takes about 5 to 8 minutes.</p>' +
+      '</header>' + notice +
+      '<section class="sheet"><div class="field">' +
+      '<label for="pid">Participant ID</label>' +
+      '<p class="hint">Your moderator fills this in, for example P3.</p>' +
+      '<input type="text" id="pid" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" value="' + esc(state.participant) + '">' +
+      (startError ? '<p class="error">' + esc(startError) + '</p>' : '') +
+      '</div></section>' +
+      '<div class="nav"><div class="nav-right"><button type="button" class="btn btn-primary" data-action="start">' + (state.rid ? 'Continue' : 'Start survey') + '</button></div></div>';
+  }
+
+  function renderProgress(step) {
+    return '<ol class="progress" aria-label="Survey progress">' + SECTIONS.map(function (s, i) {
+      var cls = i + 1 < step ? 'done' : i + 1 === step ? 'current' : 'todo';
+      return '<li class="' + cls + '"' + (cls === 'current' ? ' aria-current="step"' : '') + '><span class="bar"></span><span class="plabel">' + (i + 1) + ' · ' + esc(s.title) + '</span></li>';
+    }).join('') + '</ol>';
+  }
+
+  function renderFollow(q) {
+    var v = state.answers[q.id];
+    var label = q.follow.label(v);
+    var fid = q.follow.id;
+    return '<div class="follow" id="wrap-' + fid + '"' + (label && v ? '' : ' hidden') + '>' +
+      '<label for="' + fid + '" id="label-' + fid + '">' + esc(label || '') + '</label>' +
+      '<textarea id="' + fid + '" data-field="' + fid + '" rows="2">' + esc(state.answers[fid] || '') + '</textarea></div>';
+  }
+
+  function renderQuestion(q) {
+    var v = state.answers[q.id];
+    var head = '<span class="qnum">Q' + q.num + '</span>';
+    if (q.type === 'text') {
+      return '<div class="q">' + head +
+        '<label class="qtext" for="' + q.id + '">' + esc(q.label) + '</label>' +
+        (q.hint ? '<p class="hint">' + esc(q.hint) + '</p>' : '') +
+        '<textarea id="' + q.id + '" data-field="' + q.id + '" rows="3">' + esc(v || '') + '</textarea></div>';
+    }
+    if (q.type === 'check') {
+      return '<div class="q">' + head +
+        '<label class="check" for="' + q.id + '"><input type="checkbox" id="' + q.id + '" data-field="' + q.id + '"' + (v === true ? ' checked' : '') + '><span>' + esc(q.label) + '</span></label></div>';
+    }
+    var opts = q.type === 'scale' ? ['1', '2', '3', '4', '5'] : q.options;
+    var group = opts.map(function (o, i) {
+      var oid = q.id + '-' + i;
+      return '<label class="choice" for="' + oid + '"><input type="radio" id="' + oid + '" name="' + q.id + '" data-field="' + q.id + '" value="' + esc(o) + '"' + (String(v) === o ? ' checked' : '') + '><span>' + esc(o) + '</span></label>';
+    }).join('');
+    return '<div class="q">' + head +
+      '<div class="qtext" id="label-' + q.id + '">' + esc(q.label) + '</div>' +
+      '<div class="' + (q.type === 'scale' ? 'choices scale' : 'choices') + '" role="radiogroup" aria-labelledby="label-' + q.id + '">' + group + '</div>' +
+      (q.type === 'scale' ? '<div class="scale-ends" aria-hidden="true"><span>' + esc(q.low) + '</span><span>' + esc(q.high) + '</span></div>' : '') +
+      (q.follow ? renderFollow(q) : '') + '</div>';
+  }
+
+  function renderSection(step) {
+    var s = SECTIONS[step - 1];
+    var last = step === SECTIONS.length;
+    var reveal = s.reveal
+      ? '<div class="reveal"><p class="kicker">Before the last questions</p>' +
+        '<p class="say">I wanted to be honest about what this project was really about. This was a class project designed to test dark patterns, or manipulative design. As a team, we wanted to see how willing people are to share their personal information and data when it feels like earning a reward.</p></div>'
+      : '';
+    return '<header>' + eyebrow() + renderProgress(step) + '</header>' +
+      '<header><h2>' + esc(s.title) + '</h2>' + (s.intro ? '<p class="lead">' + esc(s.intro) + '</p>' : '') + reveal + '</header>' +
+      '<section class="sheet">' + s.items.map(renderQuestion).join('') + '</section>' +
+      '<div class="nav"><button type="button" class="btn btn-ghost" data-action="back">Back</button>' +
+      '<div class="nav-right"><span class="status" id="save-status" role="status"></span>' +
+      '<button type="button" class="btn btn-primary" data-action="' + (last ? 'submit' : 'next') + '">' + (last ? 'Submit' : 'Next') + '</button></div></div>';
+  }
+
+  function copyText() {
+    var lines = ['Owed post-session survey', 'Participant: ' + (state.participant || '(none)'), 'Submitted: ' + new Date().toLocaleString(), ''];
+    SECTIONS.forEach(function (s) {
+      s.items.forEach(function (q) {
+        lines.push('Q' + q.num + '. ' + q.label);
+        lines.push(answerOf(state.answers, q.id) || '(no answer)');
+        if (q.follow) {
+          var f = answerOf(state.answers, q.follow.id);
+          if (f) lines.push(q.follow.short + ': ' + f);
+        }
+        lines.push('');
+      });
+    });
+    return lines.join('\n');
+  }
+
+  function renderDone() {
+    var inner;
+    if (ENDPOINT && finalSaved === null) {
+      inner = '<p>Saving your answers…</p>';
+    } else if (finalSaved === true) {
+      inner = '<p class="status ok">Saved</p><p>Thank you! Please hand the device back to your moderator.</p>' +
+        '<div class="nav"><div class="nav-right"><button type="button" class="btn btn-primary" data-action="restart">Start next participant</button></div></div>';
+    } else {
+      var why = ENDPOINT
+        ? 'Your answers couldn’t be sent. Check the connection and try again, or copy them below and send them to your moderator.'
+        : 'Copy your answers below and send them to your moderator.';
+      inner = '<p>Thank you! ' + why + '</p>' +
+        '<div class="copybox"><textarea id="copy-out" readonly aria-label="Your answers">' + esc(copyText()) + '</textarea>' +
+        '<div class="nav"><button type="button" class="btn btn-primary" data-action="copy-answers">Copy my answers</button>' +
+        (ENDPOINT ? '<button type="button" class="btn btn-ghost" data-action="retry-save">Try sending again</button>' : '') +
+        '<span class="status ok" id="flash">' + esc(flash) + '</span></div></div>' +
+        (confirmRestart
+          ? '<p>Clear these answers from this device?</p><div class="nav"><button type="button" class="btn btn-danger" data-action="restart">Clear and start over</button><button type="button" class="btn btn-ghost" data-action="restart-cancel">Cancel</button></div>'
+          : '<button type="button" class="btn btn-ghost btn-small" data-action="restart-ask">Start over</button>');
+    }
+    return '<header>' + eyebrow() + '<h1>All done</h1></header>' +
+      '<section class="sheet"><div class="done">' + inner + '</div></section>';
+  }
+
+  var app = document.getElementById('app');
+  function render() {
+    if (state.step === 0) app.innerHTML = renderStart();
+    else if (state.step > SECTIONS.length) app.innerHTML = renderDone();
+    else app.innerHTML = renderSection(state.step);
+    setSaveStatus(saveStatus);
+  }
+  function go(step) {
+    state.step = step;
+    persist();
+    render();
+    window.scrollTo(0, 0);
+  }
+  function finish() {
+    finalSaved = null;
+    render();
+    persist().then(function (ok) { finalSaved = ok; render(); });
+  }
+
+  function setFlash(msg) {
+    flash = msg;
+    var el = document.getElementById('flash');
+    if (el) el.textContent = msg;
+    setTimeout(function () {
+      if (flash !== msg) return;
+      flash = '';
+      var e2 = document.getElementById('flash');
+      if (e2) e2.textContent = '';
+    }, 2500);
+  }
+  function copyAnswers() {
+    var ta = document.getElementById('copy-out');
+    function fallback() {
+      if (ta) { ta.focus(); ta.select(); }
+      setFlash('Text selected. Copy it from your keyboard or menu.');
+    }
+    try {
+      navigator.clipboard.writeText(copyText()).then(function () { setFlash('Copied'); }, fallback);
+    } catch (e) { fallback(); }
+  }
+
+  // ---------- events ----------
+  app.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.id === 'pid') { state.participant = t.value.trim().toUpperCase(); saveDraft(); return; }
+    var f = t.dataset && t.dataset.field;
+    if (!f || t.type === 'radio' || t.type === 'checkbox') return;
+    state.answers[f] = t.value;
+    saveDraft();
+  });
+  app.addEventListener('change', function (e) {
+    var t = e.target;
+    var f = t.dataset && t.dataset.field;
+    if (!f) return;
+    if (t.type === 'radio') state.answers[f] = t.value;
+    else if (t.type === 'checkbox') state.answers[f] = t.checked;
+    else return;
+    var q = ITEMS[f];
+    if (q && q.follow) {
+      var label = q.follow.label(t.value);
+      var wrap = document.getElementById('wrap-' + q.follow.id);
+      var lab = document.getElementById('label-' + q.follow.id);
+      if (wrap) wrap.hidden = !label;
+      if (lab && label) lab.textContent = label;
+    }
+    saveDraft();
+  });
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-action]');
+    if (!b) return;
+    var a = b.dataset.action;
+    if (a === 'start') {
+      var input = document.getElementById('pid');
+      state.participant = (input ? input.value : state.participant).trim().toUpperCase();
+      if (!state.participant) {
+        startError = 'Enter the participant ID, for example P3.';
+        render();
+        var p = document.getElementById('pid');
+        if (p) p.focus();
+        return;
+      }
+      startError = '';
+      if (!state.rid) { state.rid = newId(); state.startedAt = new Date().toISOString(); }
+      go(1);
+    } else if (a === 'next') {
+      go(state.step + 1);
+    } else if (a === 'back') {
+      go(state.step - 1);
+    } else if (a === 'submit') {
+      state.completed = true;
+      state.step = SECTIONS.length + 1;
+      window.scrollTo(0, 0);
+      finish();
+    } else if (a === 'retry-save') {
+      finish();
+    } else if (a === 'copy-answers') {
+      copyAnswers();
+    } else if (a === 'restart-ask') {
+      confirmRestart = true; render();
+    } else if (a === 'restart-cancel') {
+      confirmRestart = false; render();
+    } else if (a === 'restart') {
+      clearDraft();
+      state = fresh();
+      saveStatus = 'idle';
+      finalSaved = null;
+      confirmRestart = false;
+      render();
+      window.scrollTo(0, 0);
+    }
+  });
+
+  // ---------- boot ----------
+  loadDraft();
+  if (state.step > SECTIONS.length) finish();
+  else {
+    render();
+    if (state.rid && state.step >= 1) persist();
+  }
+})();
+</script>
+</body>
+</html>
